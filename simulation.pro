@@ -11,8 +11,6 @@ MOC_DIR     = tmp
 
 # Input
 HEADERS += include/Constants.h \
-           include/CustomiseForm.h \
-           include/CustomiseFormSingleton.h \
            include/DrawWidget.h \
            include/FileExx.h \
            include/GraphData.h \
@@ -20,13 +18,9 @@ HEADERS += include/Constants.h \
            include/ModelData.h \
            include/ShuffleIndexes.h \
            include/SimulationWorker.h \
-           include/SizeDialog.h \
-           include/SizeDialogSingleton.h \
            include/VertexData.h
 
-SOURCES += src/CustomiseForm.cpp \
-           src/CustomiseFormSingleton.cpp \
-           src/DrawWidget.cpp \
+SOURCES += src/DrawWidget.cpp \
            src/FileExx.cpp \
            src/GraphData.cpp \
            src/main.cpp \
@@ -34,6 +28,4 @@ SOURCES += src/CustomiseForm.cpp \
            src/ModelData.cpp \
            src/ShuffleIndexes.cpp \
            src/SimulationWorker.cpp \
-           src/SizeDialog.cpp \
-           src/SizeDialogSingleton.cpp \
            src/VertexData.cpp

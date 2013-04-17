@@ -2,6 +2,7 @@
 #define DRAWWIDGET_H
 
 #include <QtGui>
+#include <QWidget>
 
 #include "ModelData.h"
 

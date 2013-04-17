@@ -6,7 +6,7 @@
 
 #include <QtGui>
 
-#include "CustomiseFormSingleton.h"
+//#include "CustomiseFormSingleton.h"
 #include "DrawWidget.h"
 #include "SimulationWorker.h"
 #include "FileExx.h"
@@ -29,7 +29,7 @@ private slots:
 	void exit();
 	void about();
 
-	void customiseMap();
+	//void customiseMap();
 
 private:
 
@@ -38,7 +38,7 @@ private:
 	QAction *startSimAction;
 	QAction *stopSimAction;
 	QAction *exitAction;
-	QAction *customiseMapAction;
+	//QAction *customiseMapAction;
 	QAction *aboutAction;
 	
 	QMenu *topMenu;

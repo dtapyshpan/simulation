@@ -27,9 +27,9 @@ MainWindow::MainWindow()
 	topMenu->addSeparator();
 	topMenu->addAction( exitAction );
 
-	customiseMapAction = new QAction( tr("Customise Map"), this );
+	//customiseMapAction = new QAction( tr("Customise Map"), this );
 
-	connect( customiseMapAction, SIGNAL(triggered()), this, SLOT(customiseMap()) );
+	//connect( customiseMapAction, SIGNAL(triggered()), this, SLOT(customiseMap()) );
 
 	//topMenu = menuBar()->addMenu( tr("Options") );
 	//topMenu->addAction( customiseMapAction );
@@ -111,6 +111,7 @@ void MainWindow::exit()
 	qApp->quit();
 }
 
+/*
 void MainWindow::customiseMap()
 {
 	if( !CustomiseFormSingleton::instance()->checkPntr() )
@@ -122,3 +123,5 @@ void MainWindow::customiseMap()
 	CustomiseFormSingleton::instance()->show();
 	this->hide();
 }
+*/
+

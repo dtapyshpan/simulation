@@ -2,6 +2,7 @@
 #define CUSTOMISEFORM_H
 
 #include <QtGui>
+#include <QWidget>
 
 #include "DrawWidget.h"
 #include "SizeDialogSingleton.h"
