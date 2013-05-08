@@ -24,11 +24,10 @@ ShuffleIndexes::~ShuffleIndexes()
 
 void ShuffleIndexes::generatePermutation()
 {
-	for( int i = 0; i < cnt; ++i )
+	for( int i = 1; i < cnt; ++i )
 	{
-		int a = rand() % cnt;
-		int b = rand() % cnt;
-		std::swap( permutation[a], permutation[b] );
+		int x = rand() % (i + 1);
+		std::swap( permutation[i], permutation[x] );
 	}
 }
 

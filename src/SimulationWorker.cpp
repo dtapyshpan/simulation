@@ -52,9 +52,8 @@ inline void SimulationWorker::makePermutation( int *uk )
 {
 	for( int i = 0; i < cntNeighbors; ++i )
 	{
-		int a = rand() % cntNeighbors;
-		int b = rand() % cntNeighbors;
-		std::swap( uk[a], uk[b] );
+		int x = rand() % (i + 1);
+		std::swap( uk[i], uk[x] );
 	}
 }
 
@@ -133,8 +132,8 @@ void SimulationWorker::moveWater( ShuffleIndexes *const indexes, const GraphData
 		int cvcol = graph.colorVertex( cx * width + cy );
 		int cvdeg = graph.degreeVertex( cx * width + cy );
 		
-		if( cvcol == 0 ) continue; //isolate vertex
-	  if( cvdeg == 1 && cvcol > 1 ) continue; //bank >2
+		//if( cvcol == 0 ) continue; //isolate vertex
+	  //if( cvdeg == 1 && cvcol > 1 ) continue; //bank >2
 
 		makePermutation( uk );
 		for( int j = 0; j < cntNeighbors; ++j )
@@ -209,7 +208,7 @@ void SimulationWorker::startModelling()
 	GraphData graph( curData.getHeight(), curData.getWidth() );
 	while( isActive )
 	{
-		makeGraph( &graph );
+		//makeGraph( &graph );
 		moveWater( &indexes, graph );
 		collectWater();
 		generateWater();
