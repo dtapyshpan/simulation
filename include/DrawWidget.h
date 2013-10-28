@@ -3,37 +3,47 @@
 
 #include <QtGui>
 #include <QWidget>
-
 #include "ModelData.h"
 
 class DrawWidget : public QWidget
 {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
-
-	DrawWidget();
-	~DrawWidget();
-
-	const QImage & getImage();
-	void setImage( const QImage & );
+  
+  DrawWidget();
+  ~DrawWidget();
+  
+  const QImage & getImage();
+  void setImage( const QImage & );
 
 public slots: 
 
-	void drawData( const ModelData & );
+  void drawData( const ModelData & );
+	
+protected:
+
+  void mousePressEvent( QMouseEvent * );
+  void mouseMoveEvent( QMouseEvent * );
+  void wheelEvent( QWheelEvent * );
 
 private:
 
-	static const int boxsize;
-	static const double EPS;
-	int imageHeight, imageWidth;
+  double cScale;
+  QPoint lastPos, delta, cMousePos;
 
-	QImage imageData;
-	QPixmap pixmapData;
+  static const int boxsize;
+  static const double EPS;
+  int imageHeight, imageWidth;
 
-	void drawGround( const ModelData & );
-	void drawWater( const ModelData & );
-	void paintEvent( QPaintEvent * );
+  QImage imageData;
+  QPixmap pixmapData;
+
+  void drawGround( const ModelData & );
+  void drawWater( const ModelData & );
+  void paintEvent( QPaintEvent * );
+
+  void initValues();
 };
 
 #endif

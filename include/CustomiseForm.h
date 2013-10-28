@@ -3,60 +3,41 @@
 
 #include <QtGui>
 #include <QWidget>
-
 #include "DrawWidget.h"
-#include "SizeDialogSingleton.h"
+#include "ModelData.h"
 #include "Constants.h"
 
 class CustomiseForm : public QMainWindow
 {
-	Q_OBJECT
-
+  Q_OBJECT
+	
 public:
 
-	CustomiseForm();
-	~CustomiseForm();
+  CustomiseForm();
+  ~CustomiseForm();
 
-	int checkPntr();
-	void saveMWPntr( QMainWindow *const );
-	void saveImage( const QImage & );
-
+  int checkPntr();
+  void saveMWPntr( QMainWindow *const );
+  void copyModelData( const ModelData & );
+  
 public slots:
 
-	void saveImageSize( int, int );
- 
 private slots:
 
-	void setMapSize();
-  void randomMap();
-	void clearMap();
-	void exit();
+  void exit();
 	
 private:
 
-	DrawWidget *drawCust;
-	QMainWindow *mwpntr;
+  QMainWindow *mwpntr;
+  QAction *exitAction;
+  QMenu *custMenu;
 
-	QAction *setMapSizeAction;
-	QAction *exitAction;
-	QAction *randomMapAction;
-	QAction *clearMapAction;
-
-	QMenu *custMenu;
-	QDockWidget *settings;
-
-	QRadioButton *gh;
-	QRadioButton *wd;
-	QSpinBox *sbg;
-	QSpinBox *sbw;
-
-	int widthImage, heightImage;
-
-	void closeEvent();
-	void createSettings();
-
-	void closeEvent( QCloseEvent * );
-	void mousePressEvent( QMouseEvent * );
+  ModelData data;
+  DrawWidget *drawCust;
+ 
+  void closeEvent();
+  void closeEvent( QCloseEvent * );
+  void paintEvent( QPaintEvent * );
 };
 
 #endif

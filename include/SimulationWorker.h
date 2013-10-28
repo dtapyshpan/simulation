@@ -12,49 +12,48 @@ Q_DECLARE_METATYPE( ModelData )
 
 class SimulationWorker : public QObject
 {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
 
-	SimulationWorker( DrawWidget *const );
-	~SimulationWorker();
+  SimulationWorker( DrawWidget *const );
+  ~SimulationWorker();
 
-	void setSimulationEnabled( const int );
-	void setModelData( const ModelData & );
+  void setSimulationEnabled( const bool );
+  void setModelData( ModelData *const );
 
 public slots:
 
-	void startModelling();
+  void startModeling();
 
 signals:
 	
-	void finished();
-	void paintData( const ModelData & );
+  void finished();
+  void paintData( const ModelData & );
 
 private:
 
-	static const int dx[];
-	static const int dy[];
-	static const int cntNeighbors;
+  static const int dx[];
+  static const int dy[];
+  static const int cntNeighbors;
+  ModelData *curData;
+  int height, width;
 
-	volatile int isActive;
-	ModelData curData;
-	DrawWidget *drawMWP;
+  volatile bool isActive;
+  DrawWidget *drawMWP;
 
-	QMutex cz;
+  QMutex cz;
 
-	int height, width;
+  void generateWater();
+  void makeGraph( GraphData * );
+  //transfer water from(G, W) -> to(G, W)
+  static int transferWater( const int, const int, const int, const int );
+  void moveWater( ShuffleIndexes *const, const GraphData & );
+  void relaxCells( const int, const int );
+  void collectWater();
+  static inline void makePermutation( int * );
 
-	void generateWater();
-	void makeGraph(	GraphData * );
-	//transfer water from(G, W) -> to(G, W)
-	static int transferWater( const int, const int, const int, const int );
-	void moveWater( ShuffleIndexes *const, const GraphData & );
-	void relaxCells( const int, const int );
-	void collectWater();
-	static inline void makePermutation( int * );
-
-	inline int checkCoordinates( const int, const int );
+  inline bool checkCoordinates( const int, const int );
 };
 
 #endif
