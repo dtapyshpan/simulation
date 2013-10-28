@@ -18,7 +18,9 @@ HEADERS += include/Constants.h \
            include/ModelData.h \
            include/ShuffleIndexes.h \
            include/SimulationWorker.h \
-           include/VertexData.h
+           include/VertexData.h \
+           include/CustomiseForm.h \
+           include/CustomiseFormSingleton.h
 
 SOURCES += src/DrawWidget.cpp \
            src/FileExx.cpp \
@@ -28,4 +30,6 @@ SOURCES += src/DrawWidget.cpp \
            src/ModelData.cpp \
            src/ShuffleIndexes.cpp \
            src/SimulationWorker.cpp \
-           src/VertexData.cpp
+           src/VertexData.cpp \
+           src/CustomiseForm.cpp \
+           src/CustomiseFormSingleton.cpp
