@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include <QWidget>
-#include "DrawWidget.h"
+#include "DrawWidgetCF.h"
 #include "ModelData.h"
 #include "Constants.h"
 
@@ -20,8 +20,6 @@ public:
   void saveMWPntr( QMainWindow *const );
   void copyModelData( const ModelData & );
   
-public slots:
-
 private slots:
 
   void exit();
@@ -33,7 +31,7 @@ private:
   QMenu *custMenu;
 
   ModelData data;
-  DrawWidget *drawCust;
+  DrawWidgetCF *drawCust;
  
   void closeEvent();
   void closeEvent( QCloseEvent * );

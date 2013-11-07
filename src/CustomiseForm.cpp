@@ -10,7 +10,7 @@ CustomiseForm::CustomiseForm()
   custMenu = menuBar()->addMenu( tr("File") );
   custMenu->addAction( exitAction );
   
-  drawCust = new DrawWidget();
+  drawCust = new DrawWidgetCF();
   setCentralWidget( drawCust );
 
   setWindowTitle( tr("Map Customisation") );

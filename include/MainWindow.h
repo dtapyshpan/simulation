@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include "FileExx.h"
-#include "DrawWidget.h"
+#include "DrawWidgetMW.h"
 #include "SimulationWorker.h"
 #include "CustomiseFormSingleton.h"
 
@@ -39,7 +39,7 @@ private:
   QThread *simthread;
   SimulationWorker *simwrk;
   
-  DrawWidget *drawMain;
+  DrawWidgetMW *drawMain;
   
   ModelData data;
 };

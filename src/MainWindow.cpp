@@ -34,7 +34,7 @@ MainWindow::MainWindow()
   
   showMaximized();
 	
-  drawMain = new DrawWidget();
+  drawMain = new DrawWidgetMW();
   setCentralWidget( drawMain );
 
   simthread = new QThread();
