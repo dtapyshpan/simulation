@@ -81,6 +81,7 @@ void DrawWidgetCF::drawData( const ModelData &data )
 
   drawGround( data );
   drawWater( data );
+  emit changedScale( int( cScale * 100.0 ) );
 
   pixmapData = QPixmap::fromImage( imageData );
   update();
@@ -101,6 +102,17 @@ void DrawWidgetCF::paintEvent( QPaintEvent * )
   painter.setPen( Qt::red );
   painter.setBrush( Qt::NoBrush );
   painter.drawRect( cMousePos.x(), cMousePos.y(), boxwh, boxwh );
+
+  if( fabs( cScale - defaultScale ) <= EPS ) 
+  {
+    int x = cMousePos.x() - delta.x();
+    int y = cMousePos.y() - delta.y();
+
+    if( x < 0 || y < 0 ) return;
+    if( x > imageH * boxsize || y > imageW * boxsize ) return;
+
+    
+  }
 }
 
 void DrawWidgetCF::mousePressEvent( QMouseEvent *event )
@@ -128,5 +140,6 @@ void DrawWidgetCF::wheelEvent( QWheelEvent *event )
   int numSteps = numDegrees / 15;
 
   cScale *= pow( defaultZoom, numSteps );
+  emit changedScale( int( cScale * 100.0 ) );
   update();
 }

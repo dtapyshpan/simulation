@@ -14,6 +14,10 @@ public:
   
   DrawWidgetCF();
   ~DrawWidgetCF();
+
+signals:
+  
+  void changedScale( int );
   
 public slots: 
 

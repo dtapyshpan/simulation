@@ -19,7 +19,11 @@ public:
   int checkPntr();
   void saveMWPntr( QMainWindow *const );
   void copyModelData( const ModelData & );
+
+public slots:
   
+  void printScale( const int );
+
 private slots:
 
   void exit();
@@ -29,7 +33,8 @@ private:
   QMainWindow *mwpntr;
   QAction *exitAction;
   QMenu *custMenu;
-
+  QLabel scaleLabel;
+  
   ModelData data;
   DrawWidgetCF *drawCust;
  
