@@ -89,10 +89,18 @@ void DrawWidgetCF::drawData( const ModelData &data )
 void DrawWidgetCF::paintEvent( QPaintEvent * )
 {
   if( pixmapData.isNull() ) return;
+
+  int x = int( boxsize * imageH * cScale );
+  int y = int( boxsize * imageW * cScale );
+  QPixmap layer = pixmapData.scaled( x, y );
+
+  int boxwh = int( boxsize * cScale );
   
   QPainter painter( this );
-  painter.scale( cScale, cScale );
-  painter.drawPixmap( delta, pixmapData );
+  painter.drawPixmap( delta, layer );
+  painter.setPen( Qt::red );
+  painter.setBrush( Qt::NoBrush );
+  painter.drawRect( cMousePos.x(), cMousePos.y(), boxwh, boxwh );
 }
 
 void DrawWidgetCF::mousePressEvent( QMouseEvent *event )
