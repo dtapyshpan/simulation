@@ -110,8 +110,6 @@ void DrawWidgetCF::paintEvent( QPaintEvent * )
 
     if( x < 0 || y < 0 ) return;
     if( x > imageH * boxsize || y > imageW * boxsize ) return;
-
-    
   }
 }
 
