@@ -26,6 +26,10 @@ public slots:
   void printScale( const int );
   void getMousePosition( const int, const int );
 
+protected:
+  
+  //void mousePressEvent( QMouseEvent * );
+
 private slots:
 
   void exit();

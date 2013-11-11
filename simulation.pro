@@ -22,7 +22,8 @@ HEADERS += include/Constants.h \
            include/SimulationWorker.h \
            include/VertexData.h \
            include/CustomiseForm.h \
-           include/CustomiseFormSingleton.h
+           include/CustomiseFormSingleton.h \
+           include/ContextMenu.h
 
 SOURCES += src/DrawWidget.cpp \
            src/FileExx.cpp \
@@ -36,4 +37,5 @@ SOURCES += src/DrawWidget.cpp \
            src/CustomiseForm.cpp \
            src/CustomiseFormSingleton.cpp \
            src/DrawWidgetMW.cpp \
-           src/DrawWidgetCF.cpp
+           src/DrawWidgetCF.cpp \
+           src/ContextMenu.cpp

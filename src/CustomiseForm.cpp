@@ -61,7 +61,7 @@ void CustomiseForm::copyModelData( const ModelData &arg )
 
 void CustomiseForm::printScale( const int arg )
 {
-  sprintf( buf, "%d%%\0", arg );
+  sprintf( buf, "%d%%", arg );
   scaleLabel.setText( buf );
 }
 
@@ -70,7 +70,7 @@ void CustomiseForm::getMousePosition( const int x, const int y )
   int h = data.groundCell( x, y );
   int w = data.waterCell( x, y );
 
-  sprintf( buf, "h = %d, w = %d\0", h, w );
+  sprintf( buf, "h = %d, w = %d", h, w );
   statusBar()->showMessage( buf );
 }
 
