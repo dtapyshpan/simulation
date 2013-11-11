@@ -101,19 +101,6 @@ void DrawWidgetCF::paintEvent( QPaintEvent * )
   painter.setPen( Qt::red );
   painter.setBrush( Qt::NoBrush );
   painter.drawRect( cMousePos.x(), cMousePos.y(), boxwh, boxwh );
-
-  /*
-  if( fabs( cScale - defaultScale ) <= EPS ) 
-  {
-    int x = cMousePos.x() - delta.x();
-    int y = cMousePos.y() - delta.y();
-
-    if( x < 0 || y < 0 ) return;
-    if( x > imageH * boxsize || y > imageW * boxsize ) return;
-
-    emit sendMousePosition( x, y );
-  }
-  */
 }
 
 void DrawWidgetCF::mousePressEvent( QMouseEvent *event )
@@ -133,6 +120,18 @@ void DrawWidgetCF::mouseMoveEvent( QMouseEvent *event )
   }
 
   cMousePos = event->pos();
+
+  if( fabs( cScale - defaultScale ) <= EPS ) 
+  {
+    int x = ( cMousePos.x() - delta.x() ) / boxsize;
+    int y = ( cMousePos.y() - delta.y() ) / boxsize;
+
+    if( x < 0 || y < 0 ) return;
+    if( x >= imageH || y >= imageW ) return;
+
+    emit sendMousePosition( x, y );
+  }
+
   update();
 }
 
