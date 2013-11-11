@@ -1,5 +1,7 @@
 #include "../include/CustomiseForm.h"
 
+char buf[256];
+
 CustomiseForm::CustomiseForm()
 {
   mwpntr = NULL;
@@ -19,6 +21,7 @@ CustomiseForm::CustomiseForm()
   setWindowTitle( tr("Map Customisation") );
 
   connect( drawCust, SIGNAL(changedScale( int )), this, SLOT(printScale( const int )) );
+  connect( drawCust, SIGNAL(sendMousePosition( int, int )), this, SLOT(getMousePosition( const int, const int )) );
 }
 
 CustomiseForm::~CustomiseForm()
@@ -56,14 +59,22 @@ void CustomiseForm::copyModelData( const ModelData &arg )
   data = arg;
 }
 
-void CustomiseForm::paintEvent( QPaintEvent * )
-{
-  drawCust->drawData( data );
-}
-
 void CustomiseForm::printScale( const int arg )
 {
-  char buf[21];
-  sprintf( buf, "%d%%", arg );
+  sprintf( buf, "%d%%\0", arg );
   scaleLabel.setText( buf );
+}
+
+void CustomiseForm::getMousePosition( const int x, const int y )
+{
+  int h = data.groundCell( x, y );
+  int w = data.waterCell( x, y );
+
+  sprintf( buf, "h = %d, w = %d\0", h, w );
+  statusBar()->showMessage( buf );
+}
+
+void CustomiseForm::calcPicture()
+{
+  drawCust->drawData( data );
 }

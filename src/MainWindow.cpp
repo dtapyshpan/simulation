@@ -107,6 +107,7 @@ void MainWindow::customiseMap()
   if( data.getHeight() != -1 && data.getWidth() != -1 )
   {
     CustomiseFormSingleton::instance()->copyModelData( data );
+    CustomiseFormSingleton::instance()->calcPicture();
   }
  
   this->hide();

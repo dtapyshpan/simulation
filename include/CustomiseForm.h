@@ -19,10 +19,12 @@ public:
   int checkPntr();
   void saveMWPntr( QMainWindow *const );
   void copyModelData( const ModelData & );
+  void calcPicture();
 
 public slots:
   
   void printScale( const int );
+  void getMousePosition( const int, const int );
 
 private slots:
 
@@ -40,7 +42,6 @@ private:
  
   void closeEvent();
   void closeEvent( QCloseEvent * );
-  void paintEvent( QPaintEvent * );
 };
 
 #endif

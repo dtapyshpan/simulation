@@ -171,16 +171,19 @@ double ModelData::getWaterColor( const int i, const int j ) const
 
 int ModelData::groundCell( const int i, const int j ) const
 {
+  rangeCheck( i, j );
   return groundHeight[i][j];
 }
 
 int ModelData::waterCell( const int i, const int j ) const
 {
+  rangeCheck( i, j );
   return waterDepth[i][j];
 }
 
 int& ModelData::waterCell( const int i, const int j )
 {
+  rangeCheck( i, j );
   return waterDepth[i][j];
 }
 
@@ -192,4 +195,10 @@ int ModelData::getSpringSize() const
 std::pair < std::pair < int, int >, int > ModelData::springCell( const int id )
 {
   return spring[id];
+}
+
+void ModelData::rangeCheck( const int i, const int j ) const
+{
+  assert( i >= 0 && j >= 0 );
+  assert( i < height * 5 && j < width * 5 );
 }

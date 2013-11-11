@@ -39,6 +39,8 @@ private:
 
   void allocateMemory( int **(&) );
   void disposeMemory( int **(&) );
+
+  void rangeCheck( const int, const int ) const;
 };
 
 #endif

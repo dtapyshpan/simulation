@@ -11,6 +11,8 @@ const double DrawWidgetCF::EPS = 1e-7;
 const double defaultZoom = 0.9;
 const double defaultScale = 1.0;
 
+int boxwh;
+
 DrawWidgetCF::DrawWidgetCF()
 {
   setMouseTracking( true );
@@ -26,6 +28,7 @@ void DrawWidgetCF::initValues()
 {
   imageH = imageW = -1;
   cScale = defaultScale;
+  boxwh = boxsize;
   delta = lastPos = cMousePos = QPoint( 0, 0 );
 }
 
@@ -79,11 +82,13 @@ void DrawWidgetCF::drawData( const ModelData &data )
 {
   if( data.getHeight() == -1 || data.getWidth() == -1 ) return;
 
+  initValues();
   drawGround( data );
   drawWater( data );
   emit changedScale( int( cScale * 100.0 ) );
 
   pixmapData = QPixmap::fromImage( imageData );
+  layer = pixmapData;
   update();
 }
 
@@ -91,18 +96,13 @@ void DrawWidgetCF::paintEvent( QPaintEvent * )
 {
   if( pixmapData.isNull() ) return;
 
-  int x = int( boxsize * imageH * cScale );
-  int y = int( boxsize * imageW * cScale );
-  QPixmap layer = pixmapData.scaled( x, y );
-
-  int boxwh = int( boxsize * cScale );
-  
   QPainter painter( this );
   painter.drawPixmap( delta, layer );
   painter.setPen( Qt::red );
   painter.setBrush( Qt::NoBrush );
   painter.drawRect( cMousePos.x(), cMousePos.y(), boxwh, boxwh );
 
+  /*
   if( fabs( cScale - defaultScale ) <= EPS ) 
   {
     int x = cMousePos.x() - delta.x();
@@ -110,7 +110,10 @@ void DrawWidgetCF::paintEvent( QPaintEvent * )
 
     if( x < 0 || y < 0 ) return;
     if( x > imageH * boxsize || y > imageW * boxsize ) return;
+
+    emit sendMousePosition( x, y );
   }
+  */
 }
 
 void DrawWidgetCF::mousePressEvent( QMouseEvent *event )
@@ -128,6 +131,7 @@ void DrawWidgetCF::mouseMoveEvent( QMouseEvent *event )
     delta += event->pos() - lastPos;
     lastPos = event->pos();
   }
+
   cMousePos = event->pos();
   update();
 }
@@ -139,5 +143,11 @@ void DrawWidgetCF::wheelEvent( QWheelEvent *event )
 
   cScale *= pow( defaultZoom, numSteps );
   emit changedScale( int( cScale * 100.0 ) );
+
+  boxwh = int( boxsize * cScale );
+  int x = int( boxsize * imageH * cScale );
+  int y = int( boxsize * imageW * cScale );
+  layer = pixmapData.scaled( x, y );
+
   update();
 }

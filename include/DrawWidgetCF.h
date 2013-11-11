@@ -18,6 +18,7 @@ public:
 signals:
   
   void changedScale( int );
+  void sendMousePosition( int, int );
   
 public slots: 
 
@@ -39,7 +40,7 @@ private:
   int imageH, imageW;
 
   QImage imageData;
-  QPixmap pixmapData;
+  QPixmap pixmapData, layer;
 
   void drawGround( const ModelData & );
   void drawWater( const ModelData & );
