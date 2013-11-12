@@ -16,6 +16,10 @@ public:
   MainWindow();
   ~MainWindow();
 
+public slots:
+
+  void showScale( const int );
+
 private slots:
 
   void loadMap();
@@ -33,6 +37,8 @@ private:
   QAction *exitAction;
   QAction *customiseMapAction;
   QAction *aboutAction;
+
+  QLabel scaleLabel;
 	
   QMenu *topMenu;
   
@@ -42,6 +48,8 @@ private:
   DrawWidgetMW *drawMain;
   
   ModelData data;
+
+  char buf[256];
 };
 
 #endif

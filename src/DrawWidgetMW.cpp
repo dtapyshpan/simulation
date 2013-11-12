@@ -1,6 +1,5 @@
-#include <iostream>
 #include <cstdlib>
-#include <ctime>
+#include <cmath>
 #include <cassert>
 
 #include "../include/DrawWidgetMW.h"
@@ -9,6 +8,7 @@ const int DrawWidgetMW::boxsize = 5;
 
 const double defaultZoom = 0.9;
 const double defaultScale = 1.0;
+const double EPS = 1e-7;
 
 DrawWidgetMW::DrawWidgetMW()
 {
@@ -80,8 +80,10 @@ void DrawWidgetMW::drawData( const ModelData &data )
   initValues();
   drawGround( data );
   drawWater( data );
+  emit sendScale( int( cScale * 100.0 ) );
 
   pixmapData = QPixmap::fromImage( imageData );
+  layer = pixmapData;
   update();
 }
 
@@ -90,8 +92,7 @@ void DrawWidgetMW::paintEvent( QPaintEvent * )
   if( pixmapData.isNull() ) return;
   
   QPainter painter( this );
-  painter.scale( cScale, cScale );
-  painter.drawPixmap( delta, pixmapData );
+  painter.drawPixmap( delta, layer );
 }
 
 void DrawWidgetMW::mousePressEvent( QMouseEvent *event )
@@ -118,5 +119,12 @@ void DrawWidgetMW::wheelEvent( QWheelEvent *event )
   int numSteps = numDegrees / 15;
 
   cScale *= pow( defaultZoom, numSteps );
+
+  int x = int( boxsize * imageH * cScale );
+  int y = int( boxsize * imageW * cScale );
+  layer = pixmapData.scaled( x, y );
+
+  emit sendScale( int( cScale * 100.0 ) );
+
   update();
 }

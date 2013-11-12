@@ -42,8 +42,12 @@ MainWindow::MainWindow()
 
   simwrk->moveToThread( simthread );
 
+  statusBar();
+  statusBar()->addPermanentWidget( &scaleLabel );
+
   connect( simthread, SIGNAL(started()), simwrk, SLOT(startModeling()) );
   connect( simwrk, SIGNAL(finished()), simthread, SLOT(quit()) );
+  connect( drawMain, SIGNAL( sendScale( int ) ), this, SLOT( showScale( const int ) ) );
 
   setWindowTitle( tr("Water Movement Simulation Tool") );
 }
@@ -112,4 +116,10 @@ void MainWindow::customiseMap()
  
   this->hide();
   CustomiseFormSingleton::instance()->show();
+}
+
+void MainWindow::showScale( const int arg )
+{
+  sprintf( buf, "%d%%", arg );
+  scaleLabel.setText( buf );
 }

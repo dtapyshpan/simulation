@@ -18,7 +18,11 @@ public:
 public slots: 
 
   void drawData( const ModelData & );
-	
+
+signals:	
+
+  void sendScale( int );
+
 protected:
 
   void mousePressEvent( QMouseEvent * );
@@ -34,7 +38,7 @@ private:
   int imageH, imageW;
 
   QImage imageData;
-  QPixmap pixmapData;
+  QPixmap pixmapData, layer;
 
   void drawGround( const ModelData & );
   void drawWater( const ModelData & );
