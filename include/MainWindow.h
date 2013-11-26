@@ -5,7 +5,6 @@
 #include "FileExx.h"
 #include "DrawWidgetMW.h"
 #include "SimulationWorker.h"
-#include "CustomiseFormSingleton.h"
 
 class MainWindow : public QMainWindow
 {
@@ -27,7 +26,6 @@ private slots:
   void stopSimulation();
   void exit();
   void about();
-  void customiseMap();
 
 private:
 
@@ -35,10 +33,13 @@ private:
   QAction *startSimAction;
   QAction *stopSimAction;
   QAction *exitAction;
-  QAction *customiseMapAction;
   QAction *aboutAction;
 
   QLabel scaleLabel;
+  QLabel isSpring;
+
+  QSpinBox groundSB;
+  QSpinBox waterSB;
 	
   QMenu *topMenu;
   
@@ -50,6 +51,8 @@ private:
   ModelData data;
 
   char buf[256];
+
+  void createDockWidget();
 };
 
 #endif

@@ -23,12 +23,6 @@ MainWindow::MainWindow()
   topMenu->addSeparator();
   topMenu->addAction( exitAction );
 
-  customiseMapAction = new QAction( tr("Customise Map"), this );
-  connect( customiseMapAction, SIGNAL(triggered()), this, SLOT(customiseMap()) );
-  
-  topMenu = menuBar()->addMenu( tr("Options") );
-  topMenu->addAction( customiseMapAction );
-	
   topMenu = menuBar()->addMenu( tr("Help") );
   topMenu->addAction( aboutAction );
   
@@ -41,6 +35,8 @@ MainWindow::MainWindow()
   simwrk = new SimulationWorker( drawMain );
 
   simwrk->moveToThread( simthread );
+
+  createDockWidget();
 
   statusBar();
   statusBar()->addPermanentWidget( &scaleLabel );
@@ -101,25 +97,41 @@ void MainWindow::exit()
   qApp->quit();
 }
 
-void MainWindow::customiseMap()
-{
-  if( !CustomiseFormSingleton::instance()->checkPntr() )
-  {
-    CustomiseFormSingleton::instance()->saveMWPntr( this );
-  }
-
-  if( data.getHeight() != -1 && data.getWidth() != -1 )
-  {
-    CustomiseFormSingleton::instance()->copyModelData( data );
-    CustomiseFormSingleton::instance()->calcPicture();
-  }
- 
-  this->hide();
-  CustomiseFormSingleton::instance()->show();
-}
-
 void MainWindow::showScale( const int arg )
 {
   sprintf( buf, "%d%%", arg );
   scaleLabel.setText( buf );
+}
+
+void MainWindow::createDockWidget()
+{
+  QDockWidget *editWidget = new QDockWidget();
+  editWidget->setAllowedAreas( Qt::RightDockWidgetArea );
+  
+  QGridLayout *gLayout = new QGridLayout();
+
+  //----------------
+
+  QLabel *hLabel = new QLabel("Height:");
+  gLayout->addWidget( hLabel, 1, 0 );
+  gLayout->addWidget( &groundSB, 1, 1 );
+
+  QLabel *wLabel = new QLabel("Water:");
+  gLayout->addWidget( wLabel, 2, 0 );
+  gLayout->addWidget( &waterSB, 2, 1 );
+
+  QLabel *sLabel = new QLabel( "Spring:" );
+  gLayout->addWidget( sLabel, 3, 0 );
+  gLayout->addWidget( &isSpring, 3, 1 );
+  isSpring.setText( tr( "No" ) );
+
+  //----------------
+
+  QWidget *tmpW = new QWidget();
+  tmpW->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
+  tmpW->setLayout( gLayout );
+
+  editWidget->setWidget( tmpW );
+
+  addDockWidget( Qt::RightDockWidgetArea, editWidget );
 }
