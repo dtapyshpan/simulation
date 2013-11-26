@@ -29,12 +29,6 @@ private slots:
 
 private:
 
-  QAction *loadMapAction;
-  QAction *startSimAction;
-  QAction *stopSimAction;
-  QAction *exitAction;
-  QAction *aboutAction;
-
   QLabel scaleLabel;
   QLabel isSpring;
 
@@ -53,6 +47,7 @@ private:
   char buf[256];
 
   void createDockWidget();
+  QToolBar* createToolBar();
 };
 
 #endif

@@ -3,30 +3,8 @@
 
 MainWindow::MainWindow()
 {
-  loadMapAction = new QAction( tr("Load Map"), this );
-  startSimAction = new QAction( tr("Start Simulation"), this );
-  stopSimAction = new QAction( tr("Stop Simulation"), this );
-  exitAction = new QAction( tr("Exit"), this );
-  aboutAction = new QAction( tr("About"), this );
-
-  connect( loadMapAction, SIGNAL(triggered()), this, SLOT(loadMap()) );
-  connect( startSimAction, SIGNAL(triggered()), this, SLOT(startSimulation()) );
-  connect( stopSimAction, SIGNAL(triggered()), this, SLOT(stopSimulation()) );
-  connect( exitAction, SIGNAL(triggered()), this, SLOT(exit()) );
-  connect( aboutAction, SIGNAL(triggered()), this, SLOT(about()) );
-
-  topMenu = menuBar()->addMenu( tr("File") );
-  topMenu->addAction( loadMapAction );
-  topMenu->addSeparator();
-  topMenu->addAction( startSimAction );
-  topMenu->addAction( stopSimAction );
-  topMenu->addSeparator();
-  topMenu->addAction( exitAction );
-
-  topMenu = menuBar()->addMenu( tr("Help") );
-  topMenu->addAction( aboutAction );
-  
   showMaximized();
+  addToolBar( Qt::TopToolBarArea, createToolBar() );
 	
   drawMain = new DrawWidgetMW();
   setCentralWidget( drawMain );
@@ -134,4 +112,15 @@ void MainWindow::createDockWidget()
   editWidget->setWidget( tmpW );
 
   addDockWidget( Qt::RightDockWidgetArea, editWidget );
+}
+
+QToolBar* MainWindow::createToolBar()
+{
+  QToolBar *menuTB = new QToolBar();
+
+  menuTB->addAction( QPixmap("icons/open"), "open map", this, SLOT(loadMap()) );
+  menuTB->addAction( QPixmap("icons/start"), "start modeling", this, SLOT(startSimulation()) );
+  menuTB->addAction( QPixmap("icons/stop"), "stop modeling", this, SLOT(stopSimulation()) );
+
+  return menuTB;
 }
