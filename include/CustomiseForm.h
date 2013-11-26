@@ -2,7 +2,6 @@
 #define CUSTOMISEFORM_H
 
 #include <QtGui>
-#include <QWidget>
 #include "DrawWidgetCF.h"
 #include "ModelData.h"
 #include "Constants.h"
@@ -26,10 +25,6 @@ public slots:
   void printScale( const int );
   void getMousePosition( const int, const int );
 
-protected:
-  
-  //void mousePressEvent( QMouseEvent * );
-
 private slots:
 
   void exit();
@@ -43,9 +38,15 @@ private:
   
   ModelData data;
   DrawWidgetCF *drawCust;
+
+  char buf[256];
+
+  QDockWidget *propWidget;
+  QWidget *propWidget;
  
   void closeEvent();
   void closeEvent( QCloseEvent * );
+  void makePropWidget();
 };
 
 #endif

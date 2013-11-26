@@ -1,7 +1,5 @@
 #include "../include/CustomiseForm.h"
 
-char buf[256];
-
 CustomiseForm::CustomiseForm()
 {
   mwpntr = NULL;
@@ -18,6 +16,8 @@ CustomiseForm::CustomiseForm()
   drawCust = new DrawWidgetCF();
   setCentralWidget( drawCust );
 
+  makePropWidget();
+  
   setWindowTitle( tr("Map Customisation") );
 
   connect( drawCust, SIGNAL(changedScale( int )), this, SLOT(printScale( const int )) );
@@ -77,4 +77,26 @@ void CustomiseForm::getMousePosition( const int x, const int y )
 void CustomiseForm::calcPicture()
 {
   drawCust->drawData( data );
+}
+
+void CustomiseForm::makePropWidget()
+{
+  //propWidget = new QDockWidget( tr("test"), this );
+  //addDockWidget( Qt::RightDockWidgetArea, propWidget );
+
+  /*
+  propWidget.setWindowFlags( Qt::FramelessWindowHint | Qt::Tool );
+  propWidget.setAttribute( Qt::WA_TranslucentBackground );
+  propWidget.setAutoFillBackground( false );
+  propWidget.setStyleSheet( "background-color: #1b1b1b; border: 1px solid; border-radius: 7px; border-color: #303030;" );
+  propWidget.setGeometry( 5, 5, 50, 50 );
+  */
+
+  
+  propWidget = new QWidget();
+  propWidget.setWindowFlags( Qt::FramelessWindowHint | Qt::Tool );
+  propWidget.setAttribute( Qt::WA_TranslucentBackground );
+  propWidget.setAutoFillBackground( false );
+  propWidget.setStyleSheet( "background-color: #1b1b1b; border: 1px solid; border-radius: 7px; border-color: #303030;" );
+  propWidget.setGeometry( 5, 5, 50, 50 );
 }
