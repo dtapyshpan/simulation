@@ -121,6 +121,7 @@ QToolBar* MainWindow::createToolBar()
   menuTB->addAction( QPixmap("icons/open"), "open map", this, SLOT(loadMap()) );
   menuTB->addAction( QPixmap("icons/start"), "start modeling", this, SLOT(startSimulation()) );
   menuTB->addAction( QPixmap("icons/stop"), "stop modeling", this, SLOT(stopSimulation()) );
+  menuTB->addAction( QPixmap("icons/about"), "about", this, SLOT(about()) );
 
   return menuTB;
 }
