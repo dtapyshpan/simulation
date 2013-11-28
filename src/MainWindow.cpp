@@ -6,7 +6,7 @@ MainWindow::MainWindow()
   showMaximized();
   addToolBar( Qt::TopToolBarArea, createToolBar() );
 	
-  drawMain = new DrawWidgetCFOB();
+  drawMain = new DrawWidgetCF();
   setCentralWidget( drawMain );
 
   simthread = new QThread();

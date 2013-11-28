@@ -12,7 +12,6 @@ MOC_DIR     = tmp
 # Input
 HEADERS += include/Constants.h \
            include/DrawWidget.h \
-           #include/DrawWidgetMW.h \
            include/FileExx.h \
            include/GraphData.h \
            include/MainWindow.h \
@@ -21,9 +20,6 @@ HEADERS += include/Constants.h \
            include/SimulationWorker.h \
            include/VertexData.h \
            include/DrawWidgetCF.h
-           #include/CustomiseForm.h
-           #include/CustomiseFormSingleton.h
-           #include/ContextMenu.h
 
 SOURCES += src/DrawWidget.cpp \
            src/FileExx.cpp \
@@ -34,8 +30,4 @@ SOURCES += src/DrawWidget.cpp \
            src/ShuffleIndexes.cpp \
            src/SimulationWorker.cpp \
            src/VertexData.cpp \
-           #src/DrawWidgetMW.cpp 
-           #src/CustomiseForm.cpp
-           #src/CustomiseFormSingleton.cpp
            src/DrawWidgetCF.cpp
-           #src/ContextMenu.cpp
