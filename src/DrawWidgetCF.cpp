@@ -151,6 +151,7 @@ void DrawWidgetCF::wheelEvent( QWheelEvent *event )
   update();
 }
 
+/*
 void DrawWidgetCF::contextMenuEvent( QContextMenuEvent *event )
 { 
   if( fabs( cScale - defaultScale ) > EPS ) return;
@@ -163,3 +164,4 @@ void DrawWidgetCF::contextMenuEvent( QContextMenuEvent *event )
 
   cMenu.showContextMenu( event );
 }
+*/

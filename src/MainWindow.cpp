@@ -6,7 +6,7 @@ MainWindow::MainWindow()
   showMaximized();
   addToolBar( Qt::TopToolBarArea, createToolBar() );
 	
-  drawMain = new DrawWidgetMW();
+  drawMain = new DrawWidgetCF();
   setCentralWidget( drawMain );
 
   simthread = new QThread();
@@ -21,7 +21,9 @@ MainWindow::MainWindow()
 
   connect( simthread, SIGNAL(started()), simwrk, SLOT(startModeling()) );
   connect( simwrk, SIGNAL(finished()), simthread, SLOT(quit()) );
-  connect( drawMain, SIGNAL( sendScale( int ) ), this, SLOT( showScale( const int ) ) );
+  //connect( drawMain, SIGNAL( sendScale( int ) ), this, SLOT( showScale( const int ) ) );
+  connect( drawMain, SIGNAL(changedScale( int )), this, SLOT(showScale( const int )) );
+  connect( drawMain, SIGNAL(sendMousePosition( int, int )), this, SLOT(getMousePosition( const int, const int )) );
 
   setWindowTitle( tr("Water Movement Simulation Tool") );
 }
@@ -50,6 +52,7 @@ void MainWindow::loadMap()
   {
     data.readDataFromFile( fileName.toStdString().c_str() );
     drawMain->drawData( data );
+    //drawMain.drawData( data );
   }
   catch( FileExx &arg )
   {
@@ -124,4 +127,12 @@ QToolBar* MainWindow::createToolBar()
   menuTB->addAction( QPixmap("icons/about"), "about", this, SLOT(about()) );
 
   return menuTB;
+}
+
+void MainWindow::getMousePosition( const int x, const int y )
+{
+  int h = data.groundCell( x, y );                               
+  int w = data.waterCell( x, y );
+  sprintf( buf, "h = %d, w = %d", h, w );
+  statusBar()->showMessage( buf );
 }

@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include "FileExx.h"
-#include "DrawWidgetMW.h"
+#include "DrawWidgetCF.h"
 #include "SimulationWorker.h"
 
 class MainWindow : public QMainWindow
@@ -18,6 +18,7 @@ public:
 public slots:
 
   void showScale( const int );
+  void getMousePosition( const int, const int );
 
 private slots:
 
@@ -40,7 +41,7 @@ private:
   QThread *simthread;
   SimulationWorker *simwrk;
   
-  DrawWidgetMW *drawMain;
+  DrawWidgetCF *drawMain;
   
   ModelData data;
 
