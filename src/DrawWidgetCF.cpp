@@ -150,18 +150,3 @@ void DrawWidgetCF::wheelEvent( QWheelEvent *event )
   emit changedScale( int( cScale * 100.0 ) );
   update();
 }
-
-/*
-void DrawWidgetCF::contextMenuEvent( QContextMenuEvent *event )
-{ 
-  if( fabs( cScale - defaultScale ) > EPS ) return;
-
-  int x = ( event->globalPos().x() - delta.x() ) / boxsize;
-  int y = ( event->globalPos().y() - delta.y() ) / boxsize;
-
-  if( x < 0 || y < 0 ) return;
-  if( x >= imageH || y >= imageW ) return;
-
-  cMenu.showContextMenu( event );
-}
-*/

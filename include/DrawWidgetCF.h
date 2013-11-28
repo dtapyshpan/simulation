@@ -6,7 +6,6 @@
 #include <QMainWindow>
 #include "ModelData.h"
 #include "DrawWidget.h"
-//#include "ContextMenu.h"
 
 class DrawWidgetCF : public DrawWidget
 {
@@ -24,16 +23,11 @@ signals:
   void changedScale( int );
   void sendMousePosition( int, int );
   
-  //public slots: 
-
-  //void drawData( const ModelData & );
-	
 protected:
 
   void mousePressEvent( QMouseEvent * );
   void mouseMoveEvent( QMouseEvent * );
   void wheelEvent( QWheelEvent * );
-  //void contextMenuEvent( QContextMenuEvent * );
 
 private:
 
@@ -46,7 +40,6 @@ private:
 
   QImage imageData;
   QPixmap pixmapData, layer;
-  //ContextMenu cMenu;
 
   void drawGround( const ModelData & );
   void drawWater( const ModelData & );

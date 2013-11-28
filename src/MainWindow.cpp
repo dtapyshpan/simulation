@@ -6,7 +6,7 @@ MainWindow::MainWindow()
   showMaximized();
   addToolBar( Qt::TopToolBarArea, createToolBar() );
 	
-  drawMain = new DrawWidgetCF();
+  drawMain = new DrawWidgetCFOB();
   setCentralWidget( drawMain );
 
   simthread = new QThread();
@@ -21,7 +21,6 @@ MainWindow::MainWindow()
 
   connect( simthread, SIGNAL(started()), simwrk, SLOT(startModeling()) );
   connect( simwrk, SIGNAL(finished()), simthread, SLOT(quit()) );
-  //connect( drawMain, SIGNAL( sendScale( int ) ), this, SLOT( showScale( const int ) ) );
   connect( drawMain, SIGNAL(changedScale( int )), this, SLOT(showScale( const int )) );
   connect( drawMain, SIGNAL(sendMousePosition( int, int )), this, SLOT(getMousePosition( const int, const int )) );
 
@@ -52,7 +51,6 @@ void MainWindow::loadMap()
   {
     data.readDataFromFile( fileName.toStdString().c_str() );
     drawMain->drawData( data );
-    //drawMain.drawData( data );
   }
   catch( FileExx &arg )
   {
