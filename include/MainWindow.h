@@ -18,37 +18,29 @@ public:
 public slots:
 
   void showScale( const int );
-  void getMousePosition( const int, const int );
+  void getMousePosition( const int, const int, double*, double*, double* );
+  void saveChangedData( int, int, double, double, double );
 
 private slots:
 
   void loadMap();
+  void saveMap();
   void startSimulation();
   void stopSimulation();
+  void editMap();
   void exit();
   void about();
 
 private:
 
-  QLabel scaleLabel;
-  QLabel isSpring;
+  QToolBar* createToolBar();
 
-  QSpinBox groundSB;
-  QSpinBox waterSB;
-	
-  QMenu *topMenu;
-  
+  QLabel scaleLabel;
   QThread *simthread;
   SimulationWorker *simwrk;
-  
   DrawWidgetCF *drawMain;
-  
-  ModelData data;
-
-  char buf[256];
-
-  void createDockWidget();
-  QToolBar* createToolBar();
+  ModelData *data;
+  char buf[25];
 };
 
 #endif

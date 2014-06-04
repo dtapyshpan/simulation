@@ -5,8 +5,7 @@
 
 #include "ModelData.h"
 #include "ShuffleIndexes.h"
-#include "DrawWidget.h"
-#include "GraphData.h"
+#include "DrawWidgetCF.h"
 
 Q_DECLARE_METATYPE( ModelData )
 
@@ -16,11 +15,11 @@ class SimulationWorker : public QObject
 
 public:
 
-  SimulationWorker( DrawWidget *const );
+  SimulationWorker( DrawWidgetCF *const );
   ~SimulationWorker();
 
   void setSimulationEnabled( const bool );
-  void setModelData( ModelData *const );
+  void setModelData( ModelData * );
 
 public slots:
 
@@ -29,31 +28,38 @@ public slots:
 signals:
 	
   void finished();
-  void paintData( const ModelData & );
+  void paintData( ModelData * );
 
 private:
 
   static const int dx[];
   static const int dy[];
   static const int cntNeighbors;
+  static const double TMAX;
+  static const double dT;
+
   ModelData *curData;
-  int height, width;
+  int row, column;
 
   volatile bool isActive;
-  DrawWidget *drawMWP;
+  DrawWidgetCF *drawMWP;
 
   QMutex cz;
 
   void generateWater();
-  void makeGraph( GraphData * );
   //transfer water from(G, W) -> to(G, W)
-  static int transferWater( const int, const int, const int, const int );
-  void moveWater( ShuffleIndexes *const, const GraphData & );
+  static double transferWater( const double, const double, const double, const double );
+
+  static inline double calcMelting( const double );
+  void snowMelting( const double, ShuffleIndexes & );
+
+  void moveWater( ShuffleIndexes *const );
   void relaxCells( const int, const int );
   void collectWater();
   static inline void makePermutation( int * );
-
   inline bool checkCoordinates( const int, const int );
+  static inline double getNoise();
+  double getCoeff( double );
 };
 
 #endif

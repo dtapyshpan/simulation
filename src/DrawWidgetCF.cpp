@@ -1,4 +1,3 @@
-#include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <cassert>
@@ -17,6 +16,7 @@ DrawWidgetCF::DrawWidgetCF()
 {
   setMouseTracking( true );
   initValues();
+  connect( &edit, SIGNAL(sendChangedData(double, double, double)), this, SLOT(getChangedData(double, double, double)) );
 }
 
 DrawWidgetCF::~DrawWidgetCF()
@@ -26,65 +26,91 @@ DrawWidgetCF::~DrawWidgetCF()
 
 void DrawWidgetCF::initValues()
 {
-  imageH = imageW = -1;
+  editF = false;
+  dRow = dColumn = -1;
   cScale = defaultScale;
   boxwh = boxsize;
   delta = lastPos = cMousePos = QPoint( 0, 0 );
 }
 
-void DrawWidgetCF::drawGround( const ModelData &data )
+void DrawWidgetCF::drawGround( const ModelData *const data )
 {
-  imageH = data.getHeight();
-  imageW = data.getWidth();
-  int hI = imageH * boxsize, wI = imageW * boxsize;
-  QImage ret( hI, wI, QImage::Format_RGB32 );
+  int iRow = dRow * boxsize, iColumn = dColumn * boxsize;
+  QImage ret( iColumn, iRow, QImage::Format_RGB32 ); //width, height
   QPainter painter( &ret );
   QColor tmp;
-  
-  for( int i = 0; i < imageH; ++i )
+
+  for( int c = 0; c < dColumn; ++c )
   {
-    int x = i * boxsize;
-    for( int j = 0; j < imageW; ++j )
+    int y = c * boxsize;
+    for( int r = 0; r < dRow; ++r )
     {
-      int y = j * boxsize;
-      double color = data.getGroundColor( i, j );
+      int x = r * boxsize;
+      double color = data->getGroundColor( r, c );
       tmp.setHsvF( 0.3, color, 1.0 - color );
-      painter.fillRect( x, y, boxsize, boxsize, tmp );
+      painter.fillRect( y, x,  boxsize, boxsize, tmp );
     }
   }
-
+  
   imageData = ret;
 }
 
-void DrawWidgetCF::drawWater( const ModelData &data )
+void DrawWidgetCF::drawWater( const ModelData *const data )
 {
   QPainter painter( &imageData );
   QColor tmp;
 
-  for( int i = 0; i < imageH; ++i )
+  for( int c = 0; c < dColumn; ++c ) 
   {
-    int x = i * boxsize;
-    for( int j = 0; j < imageW; ++j ) 
+    int y = c * boxsize;
+    for( int r = 0; r < dRow; ++r )
     {
-      const int wl = data.waterCell( i, j );
-      if( wl > 0 )
+      const double wl = data->waterCell( r, c );
+      if( wl > EPS )
       {
-	double color = data.getWaterColor( i, j );
-	int y = j * boxsize;
-	tmp.setHsvF( 0.7, color, 1 - color );
-	painter.fillRect( x, y, boxsize, boxsize, tmp );
+	int x = r * boxsize;
+	double color = data->getWaterColor( r, c );
+	tmp.setHsvF( 0.7, color, 1.0 - color );
+	painter.fillRect( y, x, boxsize, boxsize, tmp );
       }
     }
   }
 }
 
-void DrawWidgetCF::drawData( const ModelData &data )
+void DrawWidgetCF::drawSnow( const ModelData *const data )
 {
-  if( data.getHeight() == -1 || data.getWidth() == -1 ) return;
+  QPainter painter( &imageData );
+  QColor tmp;
+
+  for( int c = 0; c < dColumn; ++c ) 
+  {
+    int y = c * boxsize;
+    for( int r = 0; r < dRow; ++r )
+    {
+      const double wl = data->snowCell( r, c );
+      if( wl > EPS )
+      {
+	int x = r * boxsize;
+	double color = data->getSnowColor( r, c );
+	tmp.setHsvF( 0.5, color, 1.0 - color );
+	painter.fillRect( y, x, boxsize, boxsize, tmp );
+      }
+    }
+  }
+}
+
+void DrawWidgetCF::drawData( ModelData *data )
+{
+  if( data->getRow() == -1 || data->getColumn() == -1 ) return;
 
   initValues();
+
+  dRow = data->getRow();
+  dColumn = data->getColumn();
+
   drawGround( data );
   drawWater( data );
+  drawSnow( data );
   emit changedScale( int( cScale * 100.0 ) );
 
   pixmapData = QPixmap::fromImage( imageData );
@@ -106,9 +132,7 @@ void DrawWidgetCF::paintEvent( QPaintEvent * )
 void DrawWidgetCF::mousePressEvent( QMouseEvent *event )
 {
   if( event->buttons() == Qt::LeftButton ) 
-  {
     lastPos = event->pos();
-  }
 }
 
 void DrawWidgetCF::mouseMoveEvent( QMouseEvent *event )
@@ -123,13 +147,13 @@ void DrawWidgetCF::mouseMoveEvent( QMouseEvent *event )
 
   if( fabs( cScale - defaultScale ) <= EPS ) 
   {
-    int x = ( cMousePos.x() - delta.x() ) / boxsize;
-    int y = ( cMousePos.y() - delta.y() ) / boxsize;
+    int c = ( cMousePos.x() - delta.x() ) / boxsize;
+    int r = ( cMousePos.y() - delta.y() ) / boxsize;
 
-    if( x < 0 || y < 0 ) return;
-    if( x >= imageH || y >= imageW ) return;
+    if( r < 0 || c < 0 ) return;
+    if( r >= dRow || c >= dColumn ) return;
 
-    emit sendMousePosition( x, y );
+    emit sendMousePosition( r, c, &dataH, &dataW, &dataS );
   }
 
   update();
@@ -143,10 +167,31 @@ void DrawWidgetCF::wheelEvent( QWheelEvent *event )
   cScale *= pow( defaultZoom, numSteps );
 
   boxwh = int( boxsize * cScale );
-  int x = int( boxsize * imageH * cScale );
-  int y = int( boxsize * imageW * cScale );
-  layer = pixmapData.scaled( x, y );
+  int nRow = int( boxsize * dRow * cScale );
+  int nColumn = int( boxsize * dColumn * cScale );
+  layer = pixmapData.scaled( nColumn, nRow );
 
   emit changedScale( int( cScale * 100.0 ) );
   update();
+}
+
+void DrawWidgetCF::mouseReleaseEvent( QMouseEvent *event )
+{
+  if( editF && fabs( defaultScale - cScale ) <= EPS )
+  {
+    edit.setData( dataH, dataW, dataS );
+    edit.show();
+  }
+}
+
+void DrawWidgetCF::setEdit()
+{
+  if( dRow != -1 && dColumn != -1 ) editF = !editF;
+}
+
+void DrawWidgetCF::getChangedData( double h, double w, double s )
+{
+  int c = ( cMousePos.x() - delta.x() ) / boxsize;
+  int r = ( cMousePos.y() - delta.y() ) / boxsize;
+  emit sendToSaveChangedData( r, c, h, w, s );
 }

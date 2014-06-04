@@ -5,7 +5,9 @@ MainWindow::MainWindow()
 {
   showMaximized();
   addToolBar( Qt::TopToolBarArea, createToolBar() );
-	
+
+  data = new ModelData();
+
   drawMain = new DrawWidgetCF();
   setCentralWidget( drawMain );
 
@@ -14,22 +16,40 @@ MainWindow::MainWindow()
 
   simwrk->moveToThread( simthread );
 
-  createDockWidget();
-
   statusBar();
   statusBar()->addPermanentWidget( &scaleLabel );
 
   connect( simthread, SIGNAL(started()), simwrk, SLOT(startModeling()) );
   connect( simwrk, SIGNAL(finished()), simthread, SLOT(quit()) );
-  connect( drawMain, SIGNAL(changedScale( int )), this, SLOT(showScale( const int )) );
-  connect( drawMain, SIGNAL(sendMousePosition( int, int )), this, SLOT(getMousePosition( const int, const int )) );
-
+  connect( drawMain, SIGNAL(changedScale(int)), this, SLOT(showScale(const int)) );
+  connect( drawMain, SIGNAL(sendMousePosition(int, int, double*, double*, double*)), this, SLOT(getMousePosition(const int, const int, double*, double*, double*)) );
+  connect( drawMain, SIGNAL(sendToSaveChangedData(int, int, double, double, double)), this, SLOT(saveChangedData(int, int, double, double, double)) );
+  
   setWindowTitle( tr("Water Movement Simulation Tool") );
 }
 
 MainWindow::~MainWindow()
 {
   printf("main window has been deleted\n");
+  if( simthread ) delete simthread;
+  if( simwrk ) delete simwrk;
+  if( drawMain ) delete drawMain;
+  if( data ) delete data;
+}
+
+QToolBar* MainWindow::createToolBar()
+{
+  QToolBar *menuTB = new QToolBar();
+
+  menuTB->addAction( QPixmap("icons/open_new"), "open map", this, SLOT(loadMap()) );
+  menuTB->addAction( QPixmap("icons/save_new"), "save map", this, SLOT(saveMap()) );
+  menuTB->addAction( QPixmap("icons/start_new"), "start modeling", this, SLOT(startSimulation()) );
+  menuTB->addAction( QPixmap("icons/stop_new"), "stop modeling", this, SLOT(stopSimulation()) );
+  menuTB->addAction( QPixmap("icons/edit_new"), "editMap", this, SLOT(editMap()) );
+  menuTB->addAction( QPixmap("icons/about_new"), "about", this, SLOT(about()) );
+  menuTB->setMovable( false );
+  
+  return menuTB;
 }
 
 void MainWindow::about()
@@ -49,7 +69,7 @@ void MainWindow::loadMap()
 
   try
   {
-    data.readDataFromFile( fileName.toStdString().c_str() );
+    data->readDataFromFile( fileName.toStdString().c_str() );
     drawMain->drawData( data );
   }
   catch( FileExx &arg )
@@ -58,17 +78,33 @@ void MainWindow::loadMap()
   }
 }
 
+void MainWindow::saveMap()
+{
+  if( data->getRow() <= 0 || data->getColumn() <= 0 ) return;
+
+  QString fileName = QFileDialog::getSaveFileName( this, tr("Save File"), "", "" );
+  if( fileName.isEmpty() ) return;
+  
+  data->saveToFile( fileName.toStdString().c_str() );
+}
+
 void MainWindow::startSimulation()
 {
-  if( data.getHeight() == -1 || data.getWidth() == -1 ) return;
+  if( data->getRow() == -1 || data->getColumn() == -1 ) return;
   simwrk->setSimulationEnabled( true );
-  simwrk->setModelData( &data );
+  simwrk->setModelData( data );
   simthread->start();
 }
 
 void MainWindow::stopSimulation()
 {
   simwrk->setSimulationEnabled( false );
+}
+
+void MainWindow::editMap()
+{
+  
+  drawMain->setEdit();
 }
 
 void MainWindow::exit()
@@ -82,55 +118,19 @@ void MainWindow::showScale( const int arg )
   scaleLabel.setText( buf );
 }
 
-void MainWindow::createDockWidget()
+void MainWindow::getMousePosition( const int x, const int y, double *dH, double *dW, double *dS )
 {
-  QDockWidget *editWidget = new QDockWidget();
-  editWidget->setAllowedAreas( Qt::RightDockWidgetArea );
-  
-  QGridLayout *gLayout = new QGridLayout();
-
-  //----------------
-
-  QLabel *hLabel = new QLabel("Height:");
-  gLayout->addWidget( hLabel, 1, 0 );
-  gLayout->addWidget( &groundSB, 1, 1 );
-
-  QLabel *wLabel = new QLabel("Water:");
-  gLayout->addWidget( wLabel, 2, 0 );
-  gLayout->addWidget( &waterSB, 2, 1 );
-
-  QLabel *sLabel = new QLabel( "Spring:" );
-  gLayout->addWidget( sLabel, 3, 0 );
-  gLayout->addWidget( &isSpring, 3, 1 );
-  isSpring.setText( tr( "No" ) );
-
-  //----------------
-
-  QWidget *tmpW = new QWidget();
-  tmpW->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
-  tmpW->setLayout( gLayout );
-
-  editWidget->setWidget( tmpW );
-
-  addDockWidget( Qt::RightDockWidgetArea, editWidget );
-}
-
-QToolBar* MainWindow::createToolBar()
-{
-  QToolBar *menuTB = new QToolBar();
-
-  menuTB->addAction( QPixmap("icons/open"), "open map", this, SLOT(loadMap()) );
-  menuTB->addAction( QPixmap("icons/start"), "start modeling", this, SLOT(startSimulation()) );
-  menuTB->addAction( QPixmap("icons/stop"), "stop modeling", this, SLOT(stopSimulation()) );
-  menuTB->addAction( QPixmap("icons/about"), "about", this, SLOT(about()) );
-
-  return menuTB;
-}
-
-void MainWindow::getMousePosition( const int x, const int y )
-{
-  int h = data.groundCell( x, y );                               
-  int w = data.waterCell( x, y );
-  sprintf( buf, "h = %d, w = %d", h, w );
+  *dH = data->groundCell( x, y );                               
+  *dW = data->waterCell( x, y );
+  *dS = data->springCell( x, y );
+  sprintf( buf, "h = %lf, w = %lf, s = %lf", *dH, *dW, *dS );
   statusBar()->showMessage( buf );
+}
+
+void MainWindow::saveChangedData( int x, int y, double h, double w, double s )
+{
+  data->rgroundCell( x, y ) = h;
+  data->rwaterCell( x, y ) = w;
+  data->rspringCell( x, y ) = s;
+  drawMain->drawData( data );
 }

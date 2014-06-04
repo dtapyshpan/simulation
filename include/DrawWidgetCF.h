@@ -4,10 +4,13 @@
 #include <QtGui>
 #include <QWidget>
 #include <QMainWindow>
-#include "ModelData.h"
-#include "DrawWidget.h"
 
-class DrawWidgetCF : public DrawWidget
+#include <cmath>
+
+#include "ModelData.h"
+#include "Editor.h"
+
+class DrawWidgetCF : public QWidget
 {
   Q_OBJECT
 
@@ -16,35 +19,45 @@ public:
   DrawWidgetCF();
   ~DrawWidgetCF();
 
-  void drawData( const ModelData & );
+  void setEdit();
+
+public slots:
+
+  void drawData( ModelData * );
+  void getChangedData( double, double, double );
 
 signals:
   
   void changedScale( int );
-  void sendMousePosition( int, int );
-  
+  void sendMousePosition( int, int, double*, double*, double* );
+  void sendToSaveChangedData( int, int, double, double, double );
+
 protected:
 
   void mousePressEvent( QMouseEvent * );
   void mouseMoveEvent( QMouseEvent * );
   void wheelEvent( QWheelEvent * );
+  void mouseReleaseEvent( QMouseEvent * );
 
 private:
 
-  double cScale;
-  QPoint lastPos, delta, cMousePos;
-
   static const int boxsize;
   static const double EPS;
-  int imageH, imageW;
+
+  bool editF;
+  double cScale, dataH, dataW, dataS;
+  QPoint lastPos, delta, cMousePos;
+  Editor edit;
+
+  int dRow, dColumn;
 
   QImage imageData;
   QPixmap pixmapData, layer;
 
-  void drawGround( const ModelData & );
-  void drawWater( const ModelData & );
+  void drawGround( const ModelData *const );
+  void drawWater( const ModelData *const );
+  void drawSnow( const ModelData *const );
   void paintEvent( QPaintEvent * );
-
   void initValues();
 };
 

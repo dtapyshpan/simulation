@@ -10,24 +10,19 @@ OBJECTS_DIR = tmp
 MOC_DIR     = tmp
 
 # Input
-HEADERS += include/Constants.h \
-           include/DrawWidget.h \
-           include/FileExx.h \
-           include/GraphData.h \
+HEADERS += include/FileExx.h \
            include/MainWindow.h \
            include/ModelData.h \
            include/ShuffleIndexes.h \
            include/SimulationWorker.h \
-           include/VertexData.h \
+           include/Editor.h \
            include/DrawWidgetCF.h
 
-SOURCES += src/DrawWidget.cpp \
-           src/FileExx.cpp \
-           src/GraphData.cpp \
+SOURCES += src/FileExx.cpp \
            src/main.cpp \
            src/MainWindow.cpp \
            src/ModelData.cpp \
            src/ShuffleIndexes.cpp \
            src/SimulationWorker.cpp \
-           src/VertexData.cpp \
+           src/Editor.cpp \
            src/DrawWidgetCF.cpp

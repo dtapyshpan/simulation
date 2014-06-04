@@ -1,49 +1,47 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>
-#include <iostream>
 
 #include "../include/ModelData.h"
 
-ModelData::ModelData() : height( -1 ), width( -1 )
+ModelData::ModelData()
 {
-  groundHeight = NULL;
-  waterDepth = NULL;
+  printf("ModelData created1\n");
+  initData();
 }
 
-ModelData::ModelData( const int argh, const int argw )
+ModelData::ModelData( const int r, const int c )
 {
-  height = argh;
-  width = argw; 
-
-  groundHeight = NULL;
-  waterDepth = NULL;
+  printf("ModelData created2\n");
+  initData( r, c );
 	
   allocateMemory( groundHeight );
   allocateMemory( waterDepth );
+  allocateMemory( spring );
+  allocateMemory( snow );
+
   assert( groundHeight );
   assert( waterDepth );
+  assert( spring );
+  assert( snow );
 }
 
 ModelData::ModelData( const ModelData &arg )
 {
-  groundHeight = NULL;
-  waterDepth = NULL;
-
-  height = arg.height;
-  width = arg.width; 
-	
+  printf("ModelData created3\n");
+  initData( arg );
+  
   allocateMemory( groundHeight );
   allocateMemory( waterDepth );
+  allocateMemory( spring );
+  allocateMemory( snow );
+
   assert( groundHeight );
   assert( waterDepth );
-  for( int i = 0; i < height; ++i )
-    for( int j = 0; j < width; ++j )
-    {
-      groundHeight[i][j] = arg.groundHeight[i][j];
-      waterDepth[i][j] = arg.waterDepth[i][j];
-    }
-  spring = arg.spring;
+  assert( spring );
+  assert( snow );
+
+  copyData( arg );
 }
 
 ModelData::~ModelData()
@@ -52,32 +50,62 @@ ModelData::~ModelData()
   printf("model data has been deleted\n");
 }
 
-int ModelData::getWidth() const
+void ModelData::initData( const int r, const int c )
 {
-  return width;
+  row = r;
+  column = c;
+  MAXHEIGHT = -1.0;
+  MAXDEPTH = -1.0;
+  groundHeight = waterDepth = snow = spring = NULL;
 }
 
-int ModelData::getHeight() const
+void ModelData::initData( const ModelData &arg )
 {
-  return height;
+  row = arg.row;
+  column = arg.column;
+  MAXHEIGHT = arg.MAXHEIGHT;
+  MAXDEPTH = arg.MAXDEPTH;
+  groundHeight = waterDepth = snow = spring = NULL;
 }
 
-void ModelData::allocateMemory( int **(&matrix) )
+void ModelData::copyData( const ModelData &arg )
 {
-  assert( width != -1 && height != -1 );
-
-  matrix = new int * [height];
-  for( int i = 0; i < height; ++i )
-    matrix[i] = new int [width];
+  for( int r = 0; r < row; ++r )
+    for( int c = 0; c < column; ++c )
+    {
+      groundHeight[r][c] = arg.groundHeight[r][c];
+      waterDepth[r][c] = arg.waterDepth[r][c];
+      spring[r][c] = arg.spring[r][c];
+      snow[r][c] = arg.snow[r][c];
+    }
 }
 
-void ModelData::disposeMemory( int **(&matrix) )
+int ModelData::getRow() const
+{
+  return row;
+}
+
+int ModelData::getColumn() const
+{
+  return column;
+}
+
+void ModelData::allocateMemory( double **(&matrix) )
+{
+  assert( row != -1 && column != -1 );
+
+  matrix = new double * [row];
+  for( int r = 0; r < row; ++r )
+    matrix[r] = new double [column];
+}
+
+void ModelData::disposeMemory( double **(&matrix) )
 {
   if( !matrix ) return;
 
-  for( int i = 0; i < height; ++i )
-    delete [] matrix[i];
-  delete [] matrix;
+  for( int r = 0; r < row; ++r )
+    delete[] matrix[r];
+  delete[] matrix;
 
   matrix = NULL;
 }
@@ -86,11 +114,16 @@ void ModelData::destroyData()
 {
   disposeMemory( groundHeight );
   disposeMemory( waterDepth );
+  disposeMemory( spring );
+  disposeMemory( snow );
+
   assert( !groundHeight );
   assert( !waterDepth );
-  width = height = -1;
-  spring.clear();
-  assert( !int( spring.size() ) );
+  assert( !spring );
+  assert( !snow );
+
+  row = column = -1;
+  MAXHEIGHT = MAXDEPTH = -1.0;
 }
 
 void ModelData::readDataFromFile( const char *const fileName )
@@ -101,104 +134,200 @@ void ModelData::readDataFromFile( const char *const fileName )
 	
   destroyData();
 	
-  fscanf( f, "%d %d", &height, &width );
+  assert( fscanf( f, "%d%d", &row, &column ) == 2 );
 
   allocateMemory( groundHeight );
   assert( groundHeight );
-  for( int i = 0; i < height; ++i )
-    for( int j = 0; j < width; ++j )
-      fscanf( f, "%d", &groundHeight[i][j] );
+  MAXHEIGHT = -1.0;
+  for( int r = 0; r < row; ++r )
+    for( int c = 0; c < column; ++c )
+    {
+      assert( fscanf( f, "%lf", &groundHeight[r][c] ) == 1 );
+      assert( groundHeight[r][c] >= 0.0 );
+      if( MAXHEIGHT < groundHeight[r][c] )
+	MAXHEIGHT = groundHeight[r][c] + 1.0;
+    }
 
   allocateMemory( waterDepth );
   assert( waterDepth );
-  for( int i = 0; i < height; ++i )
-    for( int j = 0; j < width; ++j )
-      fscanf( f, "%d", &waterDepth[i][j] );
-
-  assert( !int( spring.size() ) );
-  for( int i = 0; i < height; ++i )
-    for( int j = 0; j < width; ++j )
+  MAXDEPTH = -1.0;
+  for( int r = 0; r < row; ++r )
+    for( int c = 0; c < column; ++c )
     {
-      int x = 0;
-      fscanf( f, "%d", &x );
-      if( x ) spring.push_back( std::make_pair( std::make_pair( i, j ), waterDepth[i][j] ) );
+      assert( fscanf( f, "%lf", &waterDepth[r][c] ) == 1 );
+      assert( waterDepth[r][c] >= 0.0 );
+      if( MAXDEPTH < waterDepth[r][c] )
+	MAXDEPTH = waterDepth[r][c] + 1.0;
+    }
+
+  allocateMemory( spring );
+  assert( spring );
+  for( int r = 0; r < row; ++r )
+    for( int c = 0; c < column; ++c )
+    {
+      assert( fscanf( f, "%lf", &spring[r][c] ) == 1 );
+      assert( spring[r][c] >= 0.0 );
+      if( MAXDEPTH < spring[r][c] )
+	MAXDEPTH = spring[r][c] + 1.0;
+    }
+  MAXDEPTH *= 8.0;
+
+  allocateMemory( snow );
+  assert( snow );
+  for( int r = 0; r < row; ++r )
+    for( int c = 0; c < column; ++c )
+    {
+      assert( fscanf( f, "%lf", &snow[r][c] ) == 1 );
+      assert( snow[r][c] >= 0.0 );
     }
   
+  fclose( f );
+}
+
+void ModelData::saveToFile( const char *const fileName )
+{
+  FILE *f = fopen( fileName, "w" );
+
+  assert( f );
+  assert( fprintf( f, "%d %d\n", row, column ) >= 0 );
+  //ground
+  for( int i = 0; i < row; ++i )
+  {
+    for( int j = 0; j < column; ++j )
+      assert( fprintf( f, "%.20lf ", groundHeight[i][j] ) >= 0 );
+    assert( fprintf( f, "\n") >= 0 );
+  }
+  //water
+  for( int i = 0; i < row; ++i )
+  {
+    for( int j = 0; j < column; ++j )
+      assert( fprintf( f, "%.20lf ", waterDepth[i][j] ) >= 0 );
+    assert( fprintf( f, "\n") >= 0 );
+  }
+  //spring
+  for( int i = 0; i < row; ++i )
+  {
+    for( int j = 0; j < column; ++j )
+      assert( fprintf( f, "%.20lf ", spring[i][j] ) >= 0 );
+    assert( fprintf( f, "\n") >= 0 );
+  }
+  //snow
+  for( int i = 0; i < row; ++i )
+  {
+    for( int j = 0; j < column; ++j )
+      assert( fprintf( f, "%.20lf ", snow[i][j] ) >= 0 );
+    assert( fprintf( f, "\n") >= 0 );
+  }
+
   fclose( f );
 }
 
 void ModelData::operator =( const ModelData &arg )
 {
   destroyData();
-
-  height = arg.height;
-  width = arg.width;
+  initData( arg );
 
   allocateMemory( groundHeight );
   allocateMemory( waterDepth );
+  allocateMemory( spring );
+  allocateMemory( snow );
+
   assert( groundHeight );
   assert( waterDepth );
+  assert( spring );
+  assert( snow );
 
-  for( int i = 0; i < height; ++i )
-    for( int j = 0; j < width; ++j )
-    {
-      groundHeight[i][j] = arg.groundHeight[i][j];
-      waterDepth[i][j] = arg.waterDepth[i][j];
-    }
-
-  spring = arg.spring;
+  copyData( arg );
 }
 
-double ModelData::getGroundColor( const int i, const int j ) const
+double ModelData::getGroundColor( const int r, const int c ) const
 {
-  int cH = groundHeight[i][j];
+  rangeCheck( r, c );
+  double cH = groundHeight[r][c];
+  if( cH > MAXHEIGHT ) cH = MAXHEIGHT;
   assert( 0 <= cH && cH <= MAXHEIGHT );
-  return double( cH ) / MAXHEIGHT;
+  return cH / MAXHEIGHT;
 }
 
-double ModelData::getWaterColor( const int i, const int j ) const
+double ModelData::getWaterColor( const int r, const int c ) const
 {
-  int cD = waterDepth[i][j];
+  rangeCheck( r, c );
+  double cD = waterDepth[r][c];
+  /*
   if( cD > MAXDEPTH )
   {
-    printf("i = %d, j = %d, cD = %d\n", i, j, cD);
+    printf("r = %d, c = %d, cD = %lf, MAXDEPTH = %lf\n", r, c, cD, MAXDEPTH);
     cD = MAXDEPTH;
     fflush( stdout );
   }
+  */
   assert( 0 <= cD && cD <= MAXDEPTH );
-  return double( cD ) / MAXDEPTH;
+  return cD / MAXDEPTH;
 }
 
-int ModelData::groundCell( const int i, const int j ) const
+double ModelData::getSnowColor( const int r, const int c ) const
 {
-  rangeCheck( i, j );
-  return groundHeight[i][j];
+  rangeCheck( r, c );
+  double cS = snow[r][c];
+  return 0.5;
 }
 
-int ModelData::waterCell( const int i, const int j ) const
+double ModelData::groundCell( const int r, const int c ) const
 {
-  rangeCheck( i, j );
-  return waterDepth[i][j];
+  rangeCheck( r, c );
+  return groundHeight[r][c];
 }
 
-int& ModelData::waterCell( const int i, const int j )
+double ModelData::waterCell( const int r, const int c ) const
 {
-  rangeCheck( i, j );
-  return waterDepth[i][j];
+  rangeCheck( r, c );
+  return waterDepth[r][c];
 }
 
-int ModelData::getSpringSize() const
+double ModelData::springCell( const int r, const int c ) const
 {
-  return int( spring.size() );
+  rangeCheck( r, c );
+  return spring[r][c];
 }
 
-std::pair < std::pair < int, int >, int > ModelData::springCell( const int id )
+double ModelData::snowCell( const int r, const int c ) const
 {
-  return spring[id];
+  rangeCheck( r, c );
+  return snow[r][c];
 }
 
-void ModelData::rangeCheck( const int i, const int j ) const
+double& ModelData::rgroundCell( const int r, const int c )
 {
-  assert( i >= 0 && j >= 0 );
-  assert( i < height * 5 && j < width * 5 );
+  rangeCheck( r, c );
+  return groundHeight[r][c];
+}
+
+double& ModelData::rwaterCell( const int r, const int c )
+{
+  rangeCheck( r, c );
+  return waterDepth[r][c];
+}
+
+double& ModelData::rspringCell( const int r, const int c )
+{
+  rangeCheck( r, c );
+  return spring[r][c];
+}
+
+double& ModelData::rsnowCell( const int r, const int c )
+{
+  rangeCheck( r, c );
+  return snow[r][c];
+}
+
+void ModelData::checkMaxDepth( const int r, const int c )
+{
+  if( waterDepth[r][c] > MAXDEPTH )
+    MAXDEPTH = waterDepth[r][c];
+}
+
+void ModelData::rangeCheck( const int r, const int c ) const
+{
+  assert( r >= 0 && c >= 0 );
+  assert( r < row && c < column );
 }
