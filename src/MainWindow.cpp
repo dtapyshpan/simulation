@@ -11,13 +11,11 @@ MainWindow::MainWindow()
   addToolBar( Qt::TopToolBarArea, createToolBar() );
 
   data = new ModelData();
-
   drawMain = new DrawWidgetCF();
   setCentralWidget( drawMain );
 
   simthread = new QThread();
   simwrk = new SimulationWorker( drawMain );
-
   simwrk->moveToThread( simthread );
 
   statusBar();
@@ -73,8 +71,11 @@ void MainWindow::loadMap()
 
   try
   {
+    printf("woohoo\n");
     data->readDataFromFile( fileName.toStdString().c_str() );
+  printf("l5\n");
     drawMain->drawData( data );
+  printf("l6\n");
   }
   catch( FileExx &arg )
   {

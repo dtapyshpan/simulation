@@ -110,7 +110,7 @@ void DrawWidgetCF::drawData( ModelData *data )
 
   drawGround( data );
   drawWater( data );
-  drawSnow( data );
+  //drawSnow( data );
   emit changedScale( int( cScale * 100.0 ) );
 
   pixmapData = QPixmap::fromImage( imageData );
@@ -177,6 +177,7 @@ void DrawWidgetCF::wheelEvent( QWheelEvent *event )
 
 void DrawWidgetCF::mouseReleaseEvent( QMouseEvent *event )
 {
+  Q_UNUSED(event);
   if( editF && fabs( defaultScale - cScale ) <= EPS )
   {
     edit.setData( dataH, dataW, dataS );
