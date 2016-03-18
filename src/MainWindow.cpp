@@ -1,4 +1,8 @@
 #include <cassert>
+#include <QStatusBar>
+#include <QToolBar>
+#include <QMessageBox>
+#include <QFileDialog>
 #include "../include/MainWindow.h"
 
 MainWindow::MainWindow()

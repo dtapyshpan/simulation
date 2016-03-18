@@ -8,6 +8,7 @@ DEPENDPATH += . include src
 INCLUDEPATH += . include
 OBJECTS_DIR = tmp
 MOC_DIR     = tmp
+QT += widgets
 
 # Input
 HEADERS += include/FileExx.h \

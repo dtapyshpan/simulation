@@ -101,6 +101,7 @@ inline double SimulationWorker::calcMelting( const double arg )
   return log10( arg ) / log10( 1.5 );
 }
 
+/*
 void SimulationWorker::snowMelting( const double temperature, ShuffleIndexes &indexes )
 {
   double f1 = calcMelting( temperature );
@@ -121,6 +122,7 @@ void SimulationWorker::snowMelting( const double temperature, ShuffleIndexes &in
       }
     }
 }
+*/
 
 //random order of the cells
 void SimulationWorker::moveWater( ShuffleIndexes *const indexes )
@@ -265,3 +267,4 @@ void SimulationWorker::startModeling()
   emit finished();
   cz.unlock();
 }
+
